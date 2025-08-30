@@ -24,7 +24,8 @@ class CartScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12)),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: Text('Cart is empty', style: theme.textTheme.bodyMedium),
+                  child:
+                      Text('Cart is empty', style: theme.textTheme.bodyMedium),
                 ),
               ),
             if (entries.isNotEmpty)
