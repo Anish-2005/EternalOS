@@ -18,13 +18,16 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(children: [
-                Icon(Icons.blur_on, color: theme.colorScheme.primary),
-                const SizedBox(width: 8),
-                Text('EternalOS', style: theme.textTheme.titleLarge)
-              ]),
+              Expanded(
+                child: Row(children: [
+                  Icon(Icons.blur_on, color: theme.iconTheme.color),
+                  const SizedBox(width: 8),
+                  Flexible(
+                      child:
+                          Text('EternalOS', style: theme.textTheme.titleLarge))
+                ]),
+              ),
               Row(children: [
                 Text('Cart: ${ctx.cartTotalCount}',
                     style: theme.textTheme.bodyMedium),
@@ -33,7 +36,7 @@ class HomeScreen extends StatelessWidget {
                     onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute(
                             builder: (_) => const SettingsScreen())),
-                    icon: const Icon(Icons.settings))
+                    icon: Icon(Icons.settings, color: theme.iconTheme.color))
               ])
             ],
           ),

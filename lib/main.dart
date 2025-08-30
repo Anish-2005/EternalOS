@@ -15,6 +15,7 @@ import 'screens/history_screen.dart';
 import 'widgets/listening_pill.dart';
 import 'widgets/recording_wave.dart';
 import 'widgets/overlay_sidebar.dart';
+import 'screens/onboarding_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,7 +28,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ContextManager()),
+        ChangeNotifierProvider(create: (_) {
+          final cm = ContextManager();
+          // load persisted prefs asynchronously
+          Future.microtask(() => cm.loadPreferences());
+          return cm;
+        }),
         ChangeNotifierProvider(create: (_) => VoiceService()),
       ],
       child: MaterialApp(
@@ -67,6 +73,18 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _index = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = Provider.of<ContextManager>(context, listen: false);
+      if (!ctx.onboardingSeen) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => const OnboardingScreen()));
+      }
+    });
+  }
+
   final List<Widget> _pages = [
     const HomeScreen(),
     const ContextDashboard(),
@@ -82,6 +100,10 @@ class _MainShellState extends State<MainShell> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('EternalOS Assistant'),
+        // ensure icons/text in the app bar use a contrasting color from the theme
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        // optionally ensure the AppBar background uses primary
+        backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           if (voice.isListening)
             Padding(
@@ -102,6 +124,10 @@ class _MainShellState extends State<MainShell> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
         onTap: (i) => setState(() => _index = i),
+        selectedItemColor: Theme.of(context).colorScheme.onSurface,
+        unselectedItemColor:
+            Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(

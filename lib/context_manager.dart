@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ActionRecord {
   final String title;
@@ -33,6 +34,37 @@ class ContextManager extends ChangeNotifier {
       activeApp: 'EternalOS',
       visibleItems: ['Red Shoes', 'Blue Shoes'],
       possibleActions: ['Add to cart']);
+
+  // Whether the overlay sidebar should be shown (persisted)
+  bool overlayEnabled = true;
+  bool onboardingSeen = false;
+
+  Future<void> setOverlayEnabled(bool v) async {
+    overlayEnabled = v;
+    notifyListeners();
+    try {
+      final sp = await SharedPreferences.getInstance();
+      await sp.setBool('overlayEnabled', v);
+    } catch (_) {}
+  }
+
+  Future<void> setOnboardingSeen(bool v) async {
+    onboardingSeen = v;
+    notifyListeners();
+    try {
+      final sp = await SharedPreferences.getInstance();
+      await sp.setBool('onboardingSeen', v);
+    } catch (_) {}
+  }
+
+  Future<void> loadPreferences() async {
+    try {
+      final sp = await SharedPreferences.getInstance();
+      overlayEnabled = sp.getBool('overlayEnabled') ?? overlayEnabled;
+      onboardingSeen = sp.getBool('onboardingSeen') ?? onboardingSeen;
+      notifyListeners();
+    } catch (_) {}
+  }
 
   int get cartTotalCount => cart.values.fold(0, (a, b) => a + b);
 
