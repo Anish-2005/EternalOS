@@ -1,0 +1,19 @@
+name: eternal_os_assistant
+description: A minimal Flutter in-app assistant prototype.
+version: 0.1.0+1
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.0.0
+  speech_to_text: ^7.3.0
+  google_fonts: ^5.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
