@@ -77,12 +77,17 @@ class _OverlaySidebarState extends State<OverlaySidebar> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('EternalOS', style: Theme.of(context).textTheme.titleMedium),
+              Expanded(
+                child: Text('EternalOS',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontSize: 14)),
+              ),
               IconButton(
                   onPressed: () => setState(() => expanded = false),
-                  icon: const Icon(Icons.close))
+                  icon: const Icon(Icons.close, size: 16))
             ],
           ),
           const SizedBox(height: 8),
