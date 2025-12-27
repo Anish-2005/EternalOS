@@ -68,7 +68,7 @@ class HistoryScreen extends StatelessWidget {
   }
 
   // History list when entries are available
-  Widget _buildHistoryList(List<HistoryEntry> history, ThemeData theme) {
+  Widget _buildHistoryList(List<ActionRecord> history, ThemeData theme) {
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
       itemCount: history.length,

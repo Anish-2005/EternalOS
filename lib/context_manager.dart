@@ -107,7 +107,8 @@ Cart Items: ${cart.length}
 
   Future<String> getAISuggestions() async {
     final historyText = history.take(10).map((h) => h.title).join(', ');
-    return await _aiService.generateSuggestions(historyText, currentContext.timeOfDay);
+    return await _aiService.generateSuggestions(
+        historyText, currentContext.timeOfDay);
   }
 
   Future<void> setOverlayEnabled(bool v) async {
@@ -201,5 +202,16 @@ Cart Items: ${cart.length}
     currentContext.activeApp = app;
     _updateDynamicContext();
     notifyListeners();
+  }
+
+  Future<void> clearHistory() async {
+    history.clear();
+    _updateDynamicContext();
+    notifyListeners();
+  }
+
+  Future<void> clearAutomationHistory() async {
+    // For now, clear the same history; can be differentiated later if needed
+    await clearHistory();
   }
 }
