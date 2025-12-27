@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:math' as math;
 import '../context_manager.dart';
 import '../native_bridge.dart';
 import '../widgets/fullscreen_overlay.dart';
 import 'onboarding_screen.dart';
 
-/// Improved Settings screen for EternalOS
-///
-/// - Uses a ListView so content scrolls on small devices.
-/// - Provides clearer labels, icons, and helpful dialogs for permissions/privacy.
-/// - Uses `Consumer` to avoid rebuilding the whole tree when only a small part changes.
-/// - Adds confirmation dialogs for destructive actions and helpful SnackBars for placeholders.
+/// Advanced Settings screen for EternalOS with professional UI
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -18,22 +14,62 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
-  // Local UI-only toggles (persist them in your ContextManager or storage as needed)
+class _SettingsScreenState extends State<SettingsScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
+  // Local UI-only toggles
   bool _useCloudAI = false;
   bool _autoRunTrusted = false;
   bool _sendAnonymizedTelemetry = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
+    _fadeController.forward();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    super.dispose();
+  }
 
   void _showInfoDialog(String title, String message) {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
+        backgroundColor: const Color(0xFF1A1A1A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.cyanAccent,
+            fontFamily: 'Orbitron',
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(color: Colors.white, height: 1.5),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('OK'),
+            child: const Text(
+              'OK',
+              style: TextStyle(color: Colors.cyanAccent),
+            ),
           ),
         ],
       ),
@@ -43,7 +79,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showNotImplementedSnackBar([String? msg]) {
     final text = msg ?? 'This feature is not implemented yet.';
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(text)),
+      SnackBar(
+        content: Text(text, style: const TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF2A2A2A),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
     );
   }
 
@@ -51,17 +94,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dctx) => AlertDialog(
-        title: const Text('Clear automation history'),
+        backgroundColor: const Color(0xFF1A1A1A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text(
+          'Clear Automation History',
+          style: TextStyle(
+            color: Colors.redAccent,
+            fontFamily: 'Orbitron',
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         content: const Text(
-            'This will remove stored suggestions and automation logs from the device. This action cannot be undone.'),
+          'This will remove stored suggestions and automation logs from the device. This action cannot be undone.',
+          style: TextStyle(color: Colors.white, height: 1.5),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dctx).pop(false),
-            child: const Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.white54),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(dctx).pop(true),
-            style: ElevatedButton.styleFrom(elevation: 0),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             child: const Text('Clear'),
           ),
         ],
@@ -71,45 +135,81 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (confirmed != true) return;
 
     try {
-      // If your ContextManager exposes a clearHistory / clearAutomationHistory method,
-      // call it here. The try/catch protects against missing methods during development.
-      // Replace with the actual API call to clear history.
-      // Example: await ctx.clearAutomationHistory();
       final clear = ctx.clearAutomationHistory;
       if (clear is Function) {
         await clear();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Automation history cleared.')),
+          SnackBar(
+            content: const Text(
+              'Automation history cleared.',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.green.withOpacity(0.8),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
         );
       } else {
-        // Fallback if method doesn't exist
         _showNotImplementedSnackBar(
             'clearAutomationHistory not implemented in ContextManager.');
       }
     } catch (e) {
-      // If ContextManager does not provide the method or it fails, show feedback.
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to clear history: $e')),
+        SnackBar(
+          content: Text(
+            'Failed to clear history: $e',
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.redAccent.withOpacity(0.8),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final padding = EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: MediaQuery.of(context).size.height * 0.02,
-    );
-
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0A0A),
       appBar: AppBar(
-        title: const Text('Settings'),
-        centerTitle: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [Colors.cyanAccent, Colors.blueAccent],
+                ),
+              ),
+              child: const Icon(Icons.settings, color: Colors.black, size: 18),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'SYSTEM SETTINGS',
+              style: TextStyle(
+                color: Colors.cyanAccent,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Orbitron',
+                letterSpacing: 1,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: true,
         actions: [
           IconButton(
-            tooltip: 'Onboarding & help',
-            icon: const Icon(Icons.help_outline),
+            tooltip: 'Help & Onboarding',
+            icon: const Icon(Icons.help_outline, color: Colors.cyanAccent),
             onPressed: () {
               _showInfoDialog(
                 'About Settings',
@@ -119,260 +219,293 @@ class _SettingsScreenState extends State<SettingsScreen> {
           )
         ],
       ),
-      body: Consumer<ContextManager>(
-        builder: (context, ctx, _) {
-          return ListView(
-            padding: padding,
-            children: [
-              Text('Assistant & Overlay',
-                  style: theme.textTheme.titleLarge,
-                  semanticsLabel: 'Assistant and overlay settings'),
-              const SizedBox(height: 12),
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    // Overlay toggle
-                    SwitchListTile.adaptive(
-                      value: ctx.overlayEnabled,
-                      onChanged: (v) {
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF0A0A0A), Color(0xFF1A1A1A)],
+          ),
+        ),
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Consumer<ContextManager>(
+            builder: (context, ctx, _) {
+              return ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  _buildSectionHeader('ASSISTANT & OVERLAY'),
+                  const SizedBox(height: 16),
+                  _buildSettingsCard([
+                    _buildSwitchTile(
+                      'Enable Overlay Sidebar',
+                      'System-wide floating assistant',
+                      ctx.overlayEnabled,
+                      (v) {
                         try {
                           ctx.setOverlayEnabled(v);
                         } catch (e) {
-                          // Fallback if method not found
                           _showNotImplementedSnackBar(
                               'setOverlayEnabled not implemented in ContextManager.');
                         }
                       },
-                      title: const Text('Enable overlay sidebar'),
-                      subtitle: const Text(
-                          'Show the floating overlay control across apps.'),
-                      secondary: const Icon(Icons.view_sidebar),
+                      Icons.layers,
+                      Colors.greenAccent,
                     ),
-
-                    // Request overlay permission
-                    ListTile(
-                      leading: const Icon(Icons.settings_applications),
-                      title: const Text('Request overlay permission'),
-                      subtitle: const Text(
-                          'Grant permission to draw over other apps.'),
-                      trailing: ElevatedButton(
-                        onPressed: () async {
-                          final granted =
-                              await NativeBridge.requestOverlayPermission();
-                          if (granted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Overlay permission granted')),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                      'Please grant overlay permission in settings')),
-                            );
-                          }
-                        },
-                        child: const Text('Request'),
+                    _buildSwitchTile(
+                      'Voice Activation',
+                      'Always listening for wake words',
+                      ctx.voiceEnabled,
+                      (v) {
+                        try {
+                          ctx.setVoiceEnabled(v);
+                        } catch (e) {
+                          _showNotImplementedSnackBar(
+                              'setVoiceEnabled not implemented in ContextManager.');
+                        }
+                      },
+                      Icons.mic,
+                      Colors.blueAccent,
+                    ),
+                    _buildSwitchTile(
+                      'Context Awareness',
+                      'Monitor app usage and activities',
+                      ctx.contextAwarenessEnabled,
+                      (v) {
+                        try {
+                          ctx.setContextAwarenessEnabled(v);
+                        } catch (e) {
+                          _showNotImplementedSnackBar(
+                              'setContextAwarenessEnabled not implemented in ContextManager.');
+                        }
+                      },
+                      Icons.psychology,
+                      Colors.purpleAccent,
+                    ),
+                  ]),
+                  const SizedBox(height: 32),
+                  _buildSectionHeader('AI & PRIVACY'),
+                  const SizedBox(height: 16),
+                  _buildSettingsCard([
+                    _buildSwitchTile(
+                      'Cloud AI Processing',
+                      'Use remote servers for advanced AI',
+                      _useCloudAI,
+                      (v) => setState(() => _useCloudAI = v),
+                      Icons.cloud,
+                      Colors.orangeAccent,
+                    ),
+                    _buildSwitchTile(
+                      'Auto-run Trusted Actions',
+                      'Execute suggestions without confirmation',
+                      _autoRunTrusted,
+                      (v) => setState(() => _autoRunTrusted = v),
+                      Icons.auto_mode,
+                      Colors.redAccent,
+                    ),
+                    _buildSwitchTile(
+                      'Anonymous Telemetry',
+                      'Help improve EternalOS',
+                      _sendAnonymizedTelemetry,
+                      (v) => setState(() => _sendAnonymizedTelemetry = v),
+                      Icons.analytics,
+                      Colors.tealAccent,
+                    ),
+                  ]),
+                  const SizedBox(height: 32),
+                  _buildSectionHeader('SYSTEM'),
+                  const SizedBox(height: 16),
+                  _buildSettingsCard([
+                    _buildActionTile(
+                      'Re-run Onboarding',
+                      'Check permissions and setup',
+                      Icons.refresh,
+                      Colors.cyanAccent,
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const OnboardingScreen()),
                       ),
                     ),
-
-                    // Show/Hide overlay
-                    ListTile(
-                      leading: const Icon(Icons.visibility),
-                      title: const Text('Show system overlay'),
-                      subtitle: const Text('Display the system-wide overlay.'),
-                      trailing: ElevatedButton(
-                        onPressed: () async {
-                          if (ctx.overlayEnabled) {
-                            await NativeBridge.showNativeOverlay();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Overlay shown')),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Enable overlay first')),
-                            );
-                          }
-                        },
-                        child: const Text('Show'),
+                    _buildActionTile(
+                      'Clear History',
+                      'Remove automation logs',
+                      Icons.delete_forever,
+                      Colors.redAccent,
+                      () => _confirmAndClearHistory(ctx),
+                    ),
+                    _buildActionTile(
+                      'System Information',
+                      'View device and app details',
+                      Icons.info,
+                      Colors.white70,
+                      () => _showInfoDialog(
+                        'System Information',
+                        'EternalOS v1.0.0\n'
+                            'Built with Flutter\n'
+                            'AI Powered by Puter\n'
+                            'Platform: ${Theme.of(context).platform}',
                       ),
                     ),
-
-                    // Auto-run trusted automations
-                    SwitchListTile.adaptive(
-                      value: _autoRunTrusted,
-                      onChanged: (v) => setState(() => _autoRunTrusted = v),
-                      title: const Text('Auto-run trusted automations'),
-                      subtitle: const Text(
-                          'Allow automations you explicitly marked as "trusted" to run without confirmation. Use with caution.'),
-                      secondary: const Icon(Icons.play_arrow_rounded),
-                    ),
-
-                    // Fullscreen overlay mock
-                    ListTile(
-                      leading: const Icon(Icons.fullscreen),
-                      title: const Text('Show fullscreen overlay (mock)'),
-                      subtitle:
-                          const Text('Preview the fullscreen overlay UI.'),
-                      trailing: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (_) => const FullscreenOverlay()),
-                          );
-                        },
-                        child: const Text('Preview'),
+                  ]),
+                  const SizedBox(height: 40),
+                  Center(
+                    child: Text(
+                      'ETERNAL OS',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.3),
+                        fontSize: 12,
+                        fontFamily: 'Orbitron',
+                        letterSpacing: 3,
                       ),
                     ),
-
-                    const Divider(height: 1),
-
-                    // Re-run onboarding
-                    ListTile(
-                      leading: const Icon(Icons.replay),
-                      title: const Text('Re-run onboarding'),
-                      subtitle: const Text(
-                          'Re-open the onboarding flow to re-check permissions and walkthroughs.'),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (_) => const OnboardingScreen()),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Permissions section
-              Text('Permissions & Privacy', style: theme.textTheme.titleLarge),
-              const SizedBox(height: 12),
-              Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.lock_outline),
-                      title: const Text('Permissions guidance'),
-                      subtitle: const Text(
-                          'Instructions to enable overlay and accessibility permissions.'),
-                      onTap: () {
-                        _showInfoDialog(
-                          'Enable required permissions',
-                          '1) Allow "Display over other apps" in system settings.\n'
-                              '2) Enable the EternalOS Accessibility Service.\n\n'
-                              'Both are required for context recognition and overlays. We do not enable these automatically; follow the steps shown by the onboarding flow.',
-                        );
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.cloud_outlined),
-                      title: const Text('Use cloud AI (optional)'),
-                      subtitle: const Text(
-                          'Send anonymized context to a cloud provider to get richer suggestions. Opt-in only.'),
-                      trailing: Switch.adaptive(
-                        value: _useCloudAI,
-                        onChanged: (v) {
-                          setState(() => _useCloudAI = v);
-                          if (v) {
-                            _showInfoDialog(
-                              'Cloud AI enabled',
-                              'When enabled, minimized and anonymized context may be sent to a configured AI provider. Make sure you have configured your provider and consented to data usage in Privacy settings.',
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                    SwitchListTile.adaptive(
-                      value: _sendAnonymizedTelemetry,
-                      onChanged: (v) {
-                        setState(() => _sendAnonymizedTelemetry = v);
-                      },
-                      title: const Text('Send anonymized telemetry'),
-                      subtitle: const Text(
-                          'Help improve EternalOS while preserving privacy.'),
-                      secondary: const Icon(Icons.bar_chart),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.delete_outline),
-                      title: const Text('Clear automation history'),
-                      subtitle:
-                          const Text('Remove stored suggestions and logs.'),
-                      onTap: () => _confirmAndClearHistory(ctx),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Developer / advanced
-              Text('Advanced & Developer', style: theme.textTheme.titleLarge),
-              const SizedBox(height: 12),
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.developer_mode),
-                      title: const Text('Open debug overlay'),
-                      subtitle: const Text(
-                          'Show debug info useful while developing.'),
-                      onTap: () {
-                        _showNotImplementedSnackBar(
-                            'Debug overlay not implemented.');
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.code),
-                      title: const Text('Export automations'),
-                      subtitle: const Text(
-                          'Export your automations as JSON for sharing.'),
-                      onTap: () {
-                        _showNotImplementedSnackBar(
-                            'Export feature not implemented.');
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.import_export),
-                      title: const Text('Import automations'),
-                      subtitle:
-                          const Text('Import automations from a JSON file.'),
-                      onTap: () {
-                        _showNotImplementedSnackBar(
-                            'Import feature not implemented.');
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Footer
-              Center(
-                child: Text(
-                  'EternalOS — privacy-first contextual automation',
-                  style: theme.textTheme.bodySmall,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(height: 8),
-            ],
-          );
-        },
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              );
+            },
+          ),
+        ),
       ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 20,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.cyanAccent, Colors.blueAccent],
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(2)),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Orbitron',
+            letterSpacing: 2,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSettingsCard(List<Widget> children) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.cyanAccent.withOpacity(0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.cyanAccent.withOpacity(0.1),
+            blurRadius: 20,
+            spreadRadius: 5,
+          ),
+        ],
+      ),
+      child: Column(children: children),
+    );
+  }
+
+  Widget _buildSwitchTile(
+    String title,
+    String subtitle,
+    bool value,
+    ValueChanged<bool> onChanged,
+    IconData icon,
+    Color accentColor,
+  ) {
+    return ListTile(
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: [
+              accentColor.withOpacity(0.2),
+              accentColor.withOpacity(0.1)
+            ],
+          ),
+        ),
+        child: Icon(icon, color: accentColor, size: 20),
+      ),
+      title: Text(
+        title,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(
+          color: Colors.white.withOpacity(0.7),
+          fontSize: 12,
+        ),
+      ),
+      trailing: Switch(
+        value: value,
+        onChanged: onChanged,
+        activeColor: accentColor,
+        activeTrackColor: accentColor.withOpacity(0.3),
+      ),
+    );
+  }
+
+  Widget _buildActionTile(
+    String title,
+    String subtitle,
+    IconData icon,
+    Color accentColor,
+    VoidCallback onTap,
+  ) {
+    return ListTile(
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: [
+              accentColor.withOpacity(0.2),
+              accentColor.withOpacity(0.1)
+            ],
+          ),
+        ),
+        child: Icon(icon, color: accentColor, size: 20),
+      ),
+      title: Text(
+        title,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(
+          color: Colors.white.withOpacity(0.7),
+          fontSize: 12,
+        ),
+      ),
+      trailing: Icon(
+        Icons.arrow_forward_ios,
+        color: Colors.white.withOpacity(0.5),
+        size: 16,
+      ),
+      onTap: onTap,
     );
   }
 }

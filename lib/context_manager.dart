@@ -51,6 +51,8 @@ class ContextManager extends ChangeNotifier {
   // Whether the overlay sidebar should be shown (persisted)
   bool overlayEnabled = true;
   bool onboardingSeen = false;
+  bool voiceEnabled = true;
+  bool contextAwarenessEnabled = true;
 
   ContextManager(PuterAIService puterService)
       : _aiService = AIService(puterService) {
@@ -174,11 +176,31 @@ Cart Items: ${cart.length}
     } catch (_) {}
   }
 
+  Future<void> setVoiceEnabled(bool v) async {
+    voiceEnabled = v;
+    notifyListeners();
+    try {
+      final sp = await SharedPreferences.getInstance();
+      await sp.setBool('voiceEnabled', v);
+    } catch (_) {}
+  }
+
+  Future<void> setContextAwarenessEnabled(bool v) async {
+    contextAwarenessEnabled = v;
+    notifyListeners();
+    try {
+      final sp = await SharedPreferences.getInstance();
+      await sp.setBool('contextAwarenessEnabled', v);
+    } catch (_) {}
+  }
+
   Future<void> loadPreferences() async {
     try {
       final sp = await SharedPreferences.getInstance();
       overlayEnabled = sp.getBool('overlayEnabled') ?? overlayEnabled;
       onboardingSeen = sp.getBool('onboardingSeen') ?? onboardingSeen;
+      voiceEnabled = sp.getBool('voiceEnabled') ?? voiceEnabled;
+      contextAwarenessEnabled = sp.getBool('contextAwarenessEnabled') ?? contextAwarenessEnabled;
       notifyListeners();
     } catch (_) {}
   }
