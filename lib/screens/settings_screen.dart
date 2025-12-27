@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:math' as math;
 import '../context_manager.dart';
-import '../native_bridge.dart';
-import '../widgets/fullscreen_overlay.dart';
 import 'onboarding_screen.dart';
 
 /// Advanced Settings screen for EternalOS with professional UI
@@ -135,26 +132,20 @@ class _SettingsScreenState extends State<SettingsScreen>
     if (confirmed != true) return;
 
     try {
-      final clear = ctx.clearAutomationHistory;
-      if (clear is Function) {
-        await clear();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(
-              'Automation history cleared.',
-              style: TextStyle(color: Colors.white),
-            ),
-            backgroundColor: Colors.green.withOpacity(0.8),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+      await ctx.clearAutomationHistory();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Automation history cleared.',
+            style: TextStyle(color: Colors.white),
           ),
-        );
-      } else {
-        _showNotImplementedSnackBar(
-            'clearAutomationHistory not implemented in ContextManager.');
-      }
+          backgroundColor: Colors.green.withOpacity(0.8),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

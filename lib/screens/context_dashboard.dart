@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../context_manager.dart';
-import '../ai_service.dart';
 
 class ContextDashboard extends StatefulWidget {
   const ContextDashboard({super.key});

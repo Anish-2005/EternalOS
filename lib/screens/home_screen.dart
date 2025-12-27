@@ -4,7 +4,6 @@ import '../context_manager.dart';
 import '../voice_service.dart';
 import '../action_executor.dart';
 import '../nlu.dart';
-import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -73,6 +72,18 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 32),
 
+            // show processing indicator when listening/processing
+            if (_isProcessing) ...[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: LinearProgressIndicator(
+                  backgroundColor: Colors.white10,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.cyanAccent),
+                  minHeight: 4,
+                ),
+              ),
+            ],
+
             // Status Cards
             Row(
               children: [
@@ -139,6 +150,23 @@ class _HomeScreenState extends State<HomeScreen> {
             Text('RECENT ACTIVITY', style: theme.textTheme.titleLarge),
             const SizedBox(height: 16),
             ...ctx.history.take(3).map((record) => _buildActivityItem(record)),
+
+            // AI Response (show when available)
+            if (_aiResponse != null) ...[
+              const SizedBox(height: 24),
+              Card(
+                color: Colors.white.withOpacity(0.03),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    _aiResponse!,
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

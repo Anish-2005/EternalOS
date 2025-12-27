@@ -69,7 +69,6 @@ class ContextManager extends ChangeNotifier {
     NativeBridge.setContextUpdateHandler((data) {
       if (data is Map) {
         final packageName = data['packageName'] as String?;
-        final className = data['className'] as String?;
         final text = data['text'] as String?;
         if (packageName != null) {
           currentContext.activeApp = _getAppNameFromPackage(packageName);
