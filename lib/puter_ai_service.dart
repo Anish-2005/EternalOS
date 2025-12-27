@@ -1,14 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'dart:js' as js;
 
 class PuterAIService {
   WebViewController? _controller;
   Completer<String>? _responseCompleter;
 
   PuterAIService() {
-    _initializeController();
+    if (!kIsWeb) {
+      _initializeController();
+    }
   }
 
   void _initializeController() {
@@ -30,7 +34,16 @@ class PuterAIService {
   }
 
   Future<void> initialize() async {
-    // Already initialized in constructor
+    if (kIsWeb) {
+      // Load Puter script on web
+      js.context.callMethod('eval', ['''
+        if (!window.puter) {
+          var script = document.createElement('script');
+          script.src = 'https://js.puter.com/v2/';
+          document.head.appendChild(script);
+        }
+      ''']);
+    }
   }
 
   static const String _htmlContent = '''
@@ -46,6 +59,36 @@ class PuterAIService {
 
   Future<String> chat(String message,
       {String model = 'gemini-3-pro-preview'}) async {
+    if (kIsWeb) {
+      return _chatWeb(message, model: model);
+    } else {
+      return _chatMobile(message, model: model);
+    }
+  }
+
+  Future<String> _chatWeb(String message, {String model = 'gemini-3-pro-preview'}) async {
+    final completer = Completer<String>();
+
+    try {
+      // Use JS interop to call Puter AI
+      final result = js.context.callMethod('puter.ai.chat', [
+        message,
+        js.JsObject.jsify({
+          'model': model
+        })
+      ]);
+
+      // Since it's async, we need to handle the promise
+      // This is tricky with dart:js, might need a different approach
+      completer.complete('Web chat not fully implemented yet. Result: $result');
+    } catch (e) {
+      completer.completeError(e.toString());
+    }
+
+    return completer.future;
+  }
+
+  Future<String> _chatMobile(String message, {String model = 'gemini-3-pro-preview'}) async {
     if (_controller == null) {
       throw Exception('Puter AI not initialized');
     }
@@ -72,8 +115,8 @@ class PuterAIService {
   }
 
   Widget buildWebView() {
-    if (_controller == null) {
-      return const SizedBox.shrink(); // Return empty widget if not initialized
+    if (kIsWeb || _controller == null) {
+      return const SizedBox.shrink(); // Return empty widget if not initialized or on web
     }
     return WebViewWidget(
       controller: _controller!,

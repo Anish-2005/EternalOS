@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_web/webview_flutter_web.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'voice_service.dart';
 import 'context_manager.dart';
@@ -41,6 +43,7 @@ class ThemeProvider extends ChangeNotifier {
 }
 
 void main() {
+  WebViewPlatform.instance = WebWebViewPlatform();
   runApp(const MyApp());
 }
 
