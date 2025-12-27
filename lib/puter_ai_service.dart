@@ -7,7 +7,11 @@ class PuterAIService {
   WebViewController? _controller;
   Completer<String>? _responseCompleter;
 
-  Future<void> initialize() async {
+  PuterAIService() {
+    _initializeController();
+  }
+
+  void _initializeController() {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..addJavaScriptChannel(
@@ -23,6 +27,10 @@ class PuterAIService {
         },
       )
       ..loadHtmlString(_htmlContent);
+  }
+
+  Future<void> initialize() async {
+    // Already initialized in constructor
   }
 
   static const String _htmlContent = '''
@@ -64,6 +72,9 @@ class PuterAIService {
   }
 
   Widget buildWebView() {
+    if (_controller == null) {
+      return const SizedBox.shrink(); // Return empty widget if not initialized
+    }
     return WebViewWidget(
       controller: _controller!,
     );
