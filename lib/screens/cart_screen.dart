@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../context_manager.dart';
@@ -65,8 +67,8 @@ class CartScreen extends StatelessWidget {
   }
 
   /// List of cart items
-  Widget _buildCartList(
-      List<MapEntry<String, int>> entries, ContextManager ctx, ThemeData theme) {
+  Widget _buildCartList(List<MapEntry<String, int>> entries, ContextManager ctx,
+      ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
