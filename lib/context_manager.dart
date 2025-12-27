@@ -200,7 +200,8 @@ Cart Items: ${cart.length}
       overlayEnabled = sp.getBool('overlayEnabled') ?? overlayEnabled;
       onboardingSeen = sp.getBool('onboardingSeen') ?? onboardingSeen;
       voiceEnabled = sp.getBool('voiceEnabled') ?? voiceEnabled;
-      contextAwarenessEnabled = sp.getBool('contextAwarenessEnabled') ?? contextAwarenessEnabled;
+      contextAwarenessEnabled =
+          sp.getBool('contextAwarenessEnabled') ?? contextAwarenessEnabled;
       notifyListeners();
     } catch (_) {}
   }

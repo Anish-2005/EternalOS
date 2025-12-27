@@ -150,7 +150,8 @@ class _SplashScreenState extends State<SplashScreen>
                                       spreadRadius: 15,
                                     ),
                                     BoxShadow(
-                                      color: Colors.purpleAccent.withOpacity(0.2),
+                                      color:
+                                          Colors.purpleAccent.withOpacity(0.2),
                                       blurRadius: 80,
                                       spreadRadius: 20,
                                     ),
@@ -171,7 +172,8 @@ class _SplashScreenState extends State<SplashScreen>
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
                                               border: Border.all(
-                                                color: Colors.white.withOpacity(0.3),
+                                                color: Colors.white
+                                                    .withOpacity(0.3),
                                                 width: 2,
                                               ),
                                             ),
@@ -209,13 +211,17 @@ class _SplashScreenState extends State<SplashScreen>
                               letterSpacing: 4,
                               shadows: [
                                 Shadow(
-                                  color: Colors.cyanAccent.withOpacity(0.5 + _particleAnimation.value * 0.5),
-                                  blurRadius: 20 + _particleAnimation.value * 10,
+                                  color: Colors.cyanAccent.withOpacity(
+                                      0.5 + _particleAnimation.value * 0.5),
+                                  blurRadius:
+                                      20 + _particleAnimation.value * 10,
                                   offset: const Offset(0, 0),
                                 ),
                                 Shadow(
-                                  color: Colors.blueAccent.withOpacity(0.3 + _particleAnimation.value * 0.3),
-                                  blurRadius: 30 + _particleAnimation.value * 15,
+                                  color: Colors.blueAccent.withOpacity(
+                                      0.3 + _particleAnimation.value * 0.3),
+                                  blurRadius:
+                                      30 + _particleAnimation.value * 15,
                                   offset: const Offset(0, 0),
                                 ),
                               ],
@@ -252,7 +258,8 @@ class _SplashScreenState extends State<SplashScreen>
                               gradient: LinearGradient(
                                 colors: [
                                   Colors.transparent,
-                                  Colors.cyanAccent.withOpacity(0.6 + _particleAnimation.value * 0.4),
+                                  Colors.cyanAccent.withOpacity(
+                                      0.6 + _particleAnimation.value * 0.4),
                                   Colors.transparent,
                                 ],
                               ),
@@ -271,7 +278,8 @@ class _SplashScreenState extends State<SplashScreen>
                           TextButton(
                             onPressed: () {
                               _navigationTimer?.cancel();
-                              Navigator.of(context).pushReplacementNamed('/permissions');
+                              Navigator.of(context)
+                                  .pushReplacementNamed('/permissions');
                             },
                             child: Text(
                               'SKIP',
@@ -330,7 +338,8 @@ class _SplashScreenState extends State<SplashScreen>
         child: AnimatedBuilder(
           animation: _particleController,
           builder: (context, child) {
-            final offset = math.sin(_particleController.value * 2 * math.pi + index) * 30;
+            final offset =
+                math.sin(_particleController.value * 2 * math.pi + index) * 30;
             return Transform.translate(
               offset: Offset(offset, -offset),
               child: Opacity(
@@ -339,11 +348,13 @@ class _SplashScreenState extends State<SplashScreen>
                   width: size,
                   height: size,
                   decoration: BoxDecoration(
-                    color: colors[random.nextInt(colors.length)].withOpacity(0.6),
+                    color:
+                        colors[random.nextInt(colors.length)].withOpacity(0.6),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: colors[random.nextInt(colors.length)].withOpacity(0.3),
+                        color: colors[random.nextInt(colors.length)]
+                            .withOpacity(0.3),
                         blurRadius: size * 2,
                         spreadRadius: size * 0.5,
                       ),

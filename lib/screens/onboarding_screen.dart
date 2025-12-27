@@ -62,7 +62,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     final ctx = Provider.of<ContextManager>(context, listen: false);
-    final theme = Theme.of(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
@@ -89,218 +88,232 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 opacity: _fadeAnimation,
                 child: ScaleTransition(
                   scale: _scaleAnimation,
-                  child: Padding(
+                  child: SingleChildScrollView(
                     padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      children: [
-                        const Spacer(),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: MediaQuery.of(context).size.height -
+                            MediaQuery.of(context).padding.top -
+                            MediaQuery.of(context).padding.bottom,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 40),
 
-                        // Animated logo and title
-                        AnimatedBuilder(
-                          animation: _floatAnimation,
-                          builder: (context, child) {
-                            return Transform.translate(
-                              offset: Offset(0, _floatAnimation.value),
-                              child: child,
-                            );
-                          },
-                          child: Column(
-                            children: [
-                              Container(
-                                width: 120,
-                                height: 120,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Colors.cyanAccent,
-                                      Colors.blueAccent,
-                                      Colors.purpleAccent
+                          // Animated logo and title
+                          AnimatedBuilder(
+                            animation: _floatAnimation,
+                            builder: (context, child) {
+                              return Transform.translate(
+                                offset: Offset(0, _floatAnimation.value),
+                                child: child,
+                              );
+                            },
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 120,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Colors.cyanAccent,
+                                        Colors.blueAccent,
+                                        Colors.purpleAccent
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            Colors.cyanAccent.withOpacity(0.4),
+                                        blurRadius: 30,
+                                        spreadRadius: 5,
+                                      ),
+                                      BoxShadow(
+                                        color:
+                                            Colors.blueAccent.withOpacity(0.3),
+                                        blurRadius: 50,
+                                        spreadRadius: 10,
+                                      ),
                                     ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
                                   ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.cyanAccent.withOpacity(0.4),
-                                      blurRadius: 30,
-                                      spreadRadius: 5,
-                                    ),
-                                    BoxShadow(
-                                      color: Colors.blueAccent.withOpacity(0.3),
-                                      blurRadius: 50,
-                                      spreadRadius: 10,
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.blur_on,
-                                  color: Colors.black,
-                                  size: 60,
-                                ),
-                              ),
-                              const SizedBox(height: 32),
-                              const Text(
-                                'ETERNAL OS',
-                                style: TextStyle(
-                                  fontSize: 36,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Orbitron',
-                                  color: Colors.white,
-                                  letterSpacing: 3,
-                                  shadows: [
-                                    Shadow(
-                                      color: Colors.cyanAccent,
-                                      blurRadius: 10,
-                                      offset: Offset(0, 0),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'AI-POWERED OVERLAY SYSTEM',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: 'Orbitron',
-                                  color: Colors.cyanAccent,
-                                  letterSpacing: 2,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const Spacer(),
-
-                        // Feature highlights
-                        Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.cyanAccent.withOpacity(0.2),
-                              width: 1,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.cyanAccent.withOpacity(0.1),
-                                blurRadius: 20,
-                                spreadRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              _buildFeatureItem(
-                                Icons.mic,
-                                'Voice Control',
-                                'Speak naturally to control your device',
-                                Colors.greenAccent,
-                              ),
-                              const SizedBox(height: 20),
-                              _buildFeatureItem(
-                                Icons.psychology,
-                                'AI Context Awareness',
-                                'Intelligent understanding of your activities',
-                                Colors.purpleAccent,
-                              ),
-                              const SizedBox(height: 20),
-                              _buildFeatureItem(
-                                Icons.layers,
-                                'System Overlay',
-                                'Always accessible, stays above all apps',
-                                Colors.orangeAccent,
-                              ),
-                              const SizedBox(height: 20),
-                              _buildFeatureItem(
-                                Icons.auto_mode,
-                                'Smart Automation',
-                                'Learn and automate your routines',
-                                Colors.redAccent,
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const Spacer(),
-
-                        // Action buttons
-                        Column(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Colors.cyanAccent,
-                                    Colors.blueAccent
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.cyanAccent.withOpacity(0.4),
-                                    blurRadius: 20,
-                                    spreadRadius: 5,
-                                  ),
-                                ],
-                              ),
-                              child: ElevatedButton.icon(
-                                icon: const Icon(Icons.rocket_launch,
-                                    color: Colors.black),
-                                label: const Text(
-                                  'ACTIVATE ETERNAL OS',
-                                  style: TextStyle(
+                                  child: const Icon(
+                                    Icons.blur_on,
                                     color: Colors.black,
-                                    fontSize: 16,
+                                    size: 60,
+                                  ),
+                                ),
+                                const SizedBox(height: 32),
+                                const Text(
+                                  'ETERNAL OS',
+                                  style: TextStyle(
+                                    fontSize: 36,
                                     fontWeight: FontWeight.bold,
+                                    fontFamily: 'Orbitron',
+                                    color: Colors.white,
+                                    letterSpacing: 3,
+                                    shadows: [
+                                      Shadow(
+                                        color: Colors.cyanAccent,
+                                        blurRadius: 10,
+                                        offset: Offset(0, 0),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Revolutionary Contextual Voice Assistant',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white70,
                                     fontFamily: 'Orbitron',
                                     letterSpacing: 1,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 60),
+
+                          // Features section
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.cyanAccent.withOpacity(0.2),
+                                width: 1,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  'POWERFUL FEATURES',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Orbitron',
+                                    color: Colors.cyanAccent,
+                                    letterSpacing: 2,
                                   ),
                                 ),
+                                const SizedBox(height: 24),
+                                _buildFeatureItem(
+                                  Icons.mic,
+                                  'Voice Commands',
+                                  'Speak naturally to control your device',
+                                  Colors.greenAccent,
+                                ),
+                                const SizedBox(height: 20),
+                                _buildFeatureItem(
+                                  Icons.psychology,
+                                  'AI Context Awareness',
+                                  'Intelligent understanding of your activities',
+                                  Colors.purpleAccent,
+                                ),
+                                const SizedBox(height: 20),
+                                _buildFeatureItem(
+                                  Icons.layers,
+                                  'System Overlay',
+                                  'Always accessible, stays above all apps',
+                                  Colors.orangeAccent,
+                                ),
+                                const SizedBox(height: 20),
+                                _buildFeatureItem(
+                                  Icons.auto_mode,
+                                  'Smart Automation',
+                                  'Learn and automate your routines',
+                                  Colors.redAccent,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 60),
+
+                          // Action buttons
+                          Column(
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Colors.cyanAccent,
+                                      Colors.blueAccent
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.cyanAccent.withOpacity(0.4),
+                                      blurRadius: 20,
+                                      spreadRadius: 5,
+                                    ),
+                                  ],
+                                ),
+                                child: ElevatedButton.icon(
+                                  icon: const Icon(Icons.rocket_launch,
+                                      color: Colors.black),
+                                  label: const Text(
+                                    'ACTIVATE ETERNAL OS',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Orbitron',
+                                      letterSpacing: 1,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    await ctx.setOverlayEnabled(true);
+                                    await ctx.setOnboardingSeen(true);
+                                    if (context.mounted) {
+                                      Navigator.of(context).pop();
+                                    }
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              TextButton(
                                 onPressed: () async {
-                                  await ctx.setOverlayEnabled(true);
                                   await ctx.setOnboardingSeen(true);
                                   if (context.mounted) {
                                     Navigator.of(context).pop();
                                   }
                                 },
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            TextButton(
-                              onPressed: () async {
-                                await ctx.setOnboardingSeen(true);
-                                if (context.mounted) {
-                                  Navigator.of(context).pop();
-                                }
-                              },
-                              child: Text(
-                                'SKIP FOR NOW',
-                                style: TextStyle(
-                                  color: Colors.white54,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  letterSpacing: 1,
+                                child: Text(
+                                  'SKIP FOR NOW',
+                                  style: TextStyle(
+                                    color: Colors.white54,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    letterSpacing: 1,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
 
-                        const SizedBox(height: 24),
-                      ],
+                          const SizedBox(height: 40),
+                        ],
+                      ),
                     ),
                   ),
                 ),
