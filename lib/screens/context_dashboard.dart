@@ -24,7 +24,7 @@ class _ContextDashboardState extends State<ContextDashboard> {
     setState(() => _isAnalyzing = true);
     try {
       final ctx = Provider.of<ContextManager>(context, listen: false);
-      final aiService = AIService();
+      final aiService = ctx.aiService;
 
       final contextDescription = '''
 Active App: ${ctx.currentContext.activeApp}
@@ -93,14 +93,14 @@ Please try again later or check your internet connection.
             children: [
               _buildSectionHeader('Current Context', theme),
               _buildInfoCard('Active App', sc.activeApp, theme),
-              _buildInfoCard('Visible Items',
-                  sc.visibleItems.isEmpty ? 'None' : sc.visibleItems.join(', '), theme),
+              _buildInfoCard(
+                  'Visible Items',
+                  sc.visibleItems.isEmpty ? 'None' : sc.visibleItems.join(', '),
+                  theme),
               _buildActionsCard(sc.possibleActions, theme),
-
               const SizedBox(height: 24),
               _buildSectionHeader('AI Context Analysis', theme),
               _buildAnalysisCard(theme),
-
               const SizedBox(height: 24),
               _buildActionButtons(ctx),
             ],
@@ -219,8 +219,7 @@ Please try again later or check your internet connection.
           child: FilledButton.icon(
             icon: const Icon(Icons.bolt_rounded),
             label: const Text('Execute Suggested Action'),
-            onPressed: () =>
-                ctx.addHistory('Executed suggested AI action'),
+            onPressed: () => ctx.addHistory('Executed suggested AI action'),
           ),
         ),
       ],

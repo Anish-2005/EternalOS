@@ -156,17 +156,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ListTile(
                       leading: const Icon(Icons.settings_applications),
                       title: const Text('Request overlay permission'),
-                      subtitle: const Text('Grant permission to draw over other apps.'),
+                      subtitle: const Text(
+                          'Grant permission to draw over other apps.'),
                       trailing: ElevatedButton(
                         onPressed: () async {
-                          final granted = await NativeBridge.requestOverlayPermission();
+                          final granted =
+                              await NativeBridge.requestOverlayPermission();
                           if (granted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Overlay permission granted')),
+                              const SnackBar(
+                                  content: Text('Overlay permission granted')),
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Please grant overlay permission in settings')),
+                              const SnackBar(
+                                  content: Text(
+                                      'Please grant overlay permission in settings')),
                             );
                           }
                         },
@@ -188,7 +193,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Enable overlay first')),
+                              const SnackBar(
+                                  content: Text('Enable overlay first')),
                             );
                           }
                         },
@@ -210,7 +216,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ListTile(
                       leading: const Icon(Icons.fullscreen),
                       title: const Text('Show fullscreen overlay (mock)'),
-                      subtitle: const Text('Preview the fullscreen overlay UI.'),
+                      subtitle:
+                          const Text('Preview the fullscreen overlay UI.'),
                       trailing: ElevatedButton(
                         onPressed: () {
                           Navigator.of(context).push(
@@ -261,12 +268,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         _showInfoDialog(
                           'Enable required permissions',
                           '1) Allow "Display over other apps" in system settings.\n'
-                          '2) Enable the EternalOS Accessibility Service.\n\n'
-                          'Both are required for context recognition and overlays. We do not enable these automatically; follow the steps shown by the onboarding flow.',
+                              '2) Enable the EternalOS Accessibility Service.\n\n'
+                              'Both are required for context recognition and overlays. We do not enable these automatically; follow the steps shown by the onboarding flow.',
                         );
                       },
                     ),
-
                     ListTile(
                       leading: const Icon(Icons.cloud_outlined),
                       title: const Text('Use cloud AI (optional)'),
@@ -285,22 +291,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         },
                       ),
                     ),
-
                     SwitchListTile.adaptive(
                       value: _sendAnonymizedTelemetry,
                       onChanged: (v) {
                         setState(() => _sendAnonymizedTelemetry = v);
                       },
                       title: const Text('Send anonymized telemetry'),
-                      subtitle:
-                          const Text('Help improve EternalOS while preserving privacy.'),
+                      subtitle: const Text(
+                          'Help improve EternalOS while preserving privacy.'),
                       secondary: const Icon(Icons.bar_chart),
                     ),
-
                     ListTile(
                       leading: const Icon(Icons.delete_outline),
                       title: const Text('Clear automation history'),
-                      subtitle: const Text('Remove stored suggestions and logs.'),
+                      subtitle:
+                          const Text('Remove stored suggestions and logs.'),
                       onTap: () => _confirmAndClearHistory(ctx),
                     ),
                   ],
@@ -321,26 +326,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ListTile(
                       leading: const Icon(Icons.developer_mode),
                       title: const Text('Open debug overlay'),
-                      subtitle: const Text('Show debug info useful while developing.'),
+                      subtitle: const Text(
+                          'Show debug info useful while developing.'),
                       onTap: () {
-                        _showNotImplementedSnackBar('Debug overlay not implemented.');
+                        _showNotImplementedSnackBar(
+                            'Debug overlay not implemented.');
                       },
                     ),
                     ListTile(
                       leading: const Icon(Icons.code),
                       title: const Text('Export automations'),
-                      subtitle:
-                          const Text('Export your automations as JSON for sharing.'),
+                      subtitle: const Text(
+                          'Export your automations as JSON for sharing.'),
                       onTap: () {
-                        _showNotImplementedSnackBar('Export feature not implemented.');
+                        _showNotImplementedSnackBar(
+                            'Export feature not implemented.');
                       },
                     ),
                     ListTile(
                       leading: const Icon(Icons.import_export),
                       title: const Text('Import automations'),
-                      subtitle: const Text('Import automations from a JSON file.'),
+                      subtitle:
+                          const Text('Import automations from a JSON file.'),
                       onTap: () {
-                        _showNotImplementedSnackBar('Import feature not implemented.');
+                        _showNotImplementedSnackBar(
+                            'Import feature not implemented.');
                       },
                     ),
                     const SizedBox(height: 8),

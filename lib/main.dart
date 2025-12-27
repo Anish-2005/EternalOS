@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import 'voice_service.dart';
 import 'context_manager.dart';
@@ -18,6 +19,7 @@ import 'widgets/recording_wave.dart';
 import 'widgets/overlay_sidebar.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/task_manager_screen.dart';
+import 'puter_ai_service.dart';
 
 // Theme provider for dynamic dark/light mode
 class ThemeProvider extends ChangeNotifier {
@@ -54,12 +56,15 @@ class MyApp extends StatelessWidget {
           tp.loadTheme();
           return tp;
         }),
-        ChangeNotifierProvider(create: (_) {
-          final cm = ContextManager();
+        ChangeNotifierProvider(create: (context) {
+          final puterService =
+              Provider.of<PuterAIService>(context, listen: false);
+          final cm = ContextManager(puterService);
           Future.microtask(() => cm.loadPreferences());
           return cm;
         }),
         ChangeNotifierProvider(create: (_) => VoiceService()),
+        Provider(create: (_) => PuterAIService()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -263,7 +268,15 @@ class _MainShellState extends State<MainShell> with TickerProviderStateMixin {
           duration: const Duration(milliseconds: 300),
           child: _pages[_index],
         ),
-        const OverlaySidebar()
+        const OverlaySidebar(),
+        Consumer<PuterAIService>(
+          builder: (context, puterService, child) {
+            return Opacity(
+              opacity: 0.0, // Hidden WebView
+              child: puterService.buildWebView(),
+            );
+          },
+        ),
       ]),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
@@ -292,7 +305,8 @@ class _MainShellState extends State<MainShell> with TickerProviderStateMixin {
                     'item': parsed['item'],
                     'resolvedItem': resolved,
                   };
-                  final result = await ActionExecutor(ctx).execute(action);
+                  final result =
+                      await ActionExecutor(ctx, ctx.aiService).execute(action);
                   if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(result ?? 'Action executed')));

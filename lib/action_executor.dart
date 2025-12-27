@@ -3,9 +3,9 @@ import 'ai_service.dart';
 
 class ActionExecutor {
   final ContextManager context;
-  final AIService _aiService = AIService();
+  final AIService _aiService;
 
-  ActionExecutor(this.context);
+  ActionExecutor(this.context, this._aiService);
 
   /// Executes AI-driven actions for an OS-like experience.
   /// Supports intents: ADD_TO_CART, SHOW_CART, CLEAR_CART, OPEN_APP, SEARCH, PLAY_MUSIC, SET_REMINDER, GET_SUGGESTIONS
@@ -48,7 +48,8 @@ Active App: ${context.currentContext.activeApp}
 Time: ${context.currentContext.timeOfDay}
 Recent Actions: ${context.history.take(3).map((h) => h.title).join(', ')}
 ''';
-          final aiResponse = await _aiService.processVoiceQuery(item, currentContext);
+          final aiResponse =
+              await _aiService.processVoiceQuery(item, currentContext);
           context.addHistory('AI Response: $aiResponse');
           return aiResponse;
         } catch (e) {

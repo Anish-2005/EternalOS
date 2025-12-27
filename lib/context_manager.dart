@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'ai_service.dart';
 import 'native_bridge.dart';
+import 'puter_ai_service.dart';
 
 class ActionRecord {
   final String title;
@@ -28,7 +29,7 @@ class ScreenContext {
 }
 
 class ContextManager extends ChangeNotifier {
-  final AIService _aiService = AIService();
+  final AIService _aiService;
   // Visible UI items for the in-app MVP.
   List<String> items = ['Red Shoes', 'Blue Shoes', 'Black Hat', 'Green Jacket'];
 
@@ -51,9 +52,15 @@ class ContextManager extends ChangeNotifier {
   bool overlayEnabled = true;
   bool onboardingSeen = false;
 
-  ContextManager() {
+  ContextManager(PuterAIService puterService)
+      : _aiService = AIService(puterService) {
     _updateDynamicContext();
     _setupNativeContextListener();
+    _initializeAI();
+  }
+
+  Future<void> _initializeAI() async {
+    await _aiService.initialize();
   }
 
   void _setupNativeContextListener() {
@@ -85,7 +92,11 @@ class ContextManager extends ChangeNotifier {
   List<String> _extractVisibleItems(String? text) {
     if (text == null || text.isEmpty) return [];
     // Simple extraction; in real app, use NLP
-    return text.split(RegExp(r'\s+')).where((w) => w.length > 3).take(5).toList();
+    return text
+        .split(RegExp(r'\s+'))
+        .where((w) => w.length > 3)
+        .take(5)
+        .toList();
   }
 
   void _updateDynamicContext() {
@@ -244,8 +255,4 @@ Cart Items: ${cart.length}
     notifyListeners();
   }
 
-  Future<void> clearAutomationHistory() async {
-    // For now, clear the same history; can be differentiated later if needed
-    await clearHistory();
-  }
-}
+  AIService get aiService => _aiService;
