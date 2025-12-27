@@ -255,4 +255,10 @@ Cart Items: ${cart.length}
     notifyListeners();
   }
 
+  Future<void> clearAutomationHistory() async {
+    // For now, clear the same history; can be differentiated later if needed
+    await clearHistory();
+  }
+
   AIService get aiService => _aiService;
+}

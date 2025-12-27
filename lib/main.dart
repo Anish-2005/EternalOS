@@ -56,6 +56,7 @@ class MyApp extends StatelessWidget {
           tp.loadTheme();
           return tp;
         }),
+        Provider(create: (_) => PuterAIService()),
         ChangeNotifierProvider(create: (context) {
           final puterService =
               Provider.of<PuterAIService>(context, listen: false);
@@ -64,7 +65,6 @@ class MyApp extends StatelessWidget {
           return cm;
         }),
         ChangeNotifierProvider(create: (_) => VoiceService()),
-        Provider(create: (_) => PuterAIService()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {

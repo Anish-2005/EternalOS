@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final ctx = Provider.of<ContextManager>(context);
     final voice = Provider.of<VoiceService>(context);
     final theme = Theme.of(context);
-    final actionExecutor = ActionExecutor(ctx);
+    final actionExecutor = ActionExecutor(ctx, ctx.aiService);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -143,13 +143,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             setState(() => _isProcessing = true);
                             try {
                               final nluResult = NLU.parse(transcript);
-                              final response = await actionExecutor.execute(nluResult);
-                              setState(() => _aiResponse = response ?? 'No response');
+                              final response =
+                                  await actionExecutor.execute(nluResult);
+                              setState(() =>
+                                  _aiResponse = response ?? 'No response');
                             } catch (e) {
                               String errorMessage = 'Error: $e';
 
                               // Provide more helpful error messages
-                              if (e.toString().contains('429') || e.toString().contains('quota')) {
+                              if (e.toString().contains('429') ||
+                                  e.toString().contains('quota')) {
                                 errorMessage = '''
 API quota exceeded. This means you've reached the free tier limit for AI requests.
 
@@ -160,7 +163,8 @@ To fix this:
 
 The app will continue to work with cached responses and basic voice commands.
 ''';
-                              } else if (e.toString().contains('network') || e.toString().contains('connection')) {
+                              } else if (e.toString().contains('network') ||
+                                  e.toString().contains('connection')) {
                                 errorMessage = '''
 Network error. Please check your internet connection and try again.
 

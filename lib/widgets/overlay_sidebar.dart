@@ -103,7 +103,7 @@ class _OverlaySidebarState extends State<OverlaySidebar> {
                         'item': parsed['item'],
                         'resolvedItem': resolved,
                       };
-                      await ActionExecutor(ctx).execute(action);
+                      await ActionExecutor(ctx, ctx.aiService).execute(action);
                     },
                     context: context);
               } else {

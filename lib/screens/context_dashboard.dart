@@ -34,19 +34,6 @@ Time of Day: ${ctx.currentContext.timeOfDay}
 AI Suggestions: ${ctx.currentContext.aiSuggestions.join(', ')}
 ''';
 
-      // Check rate limit status before making request
-      final rateLimitStatus = aiService.getRateLimitStatus();
-      if (!rateLimitStatus['canMakeRequest']) {
-        setState(() => _aiAnalysis = '''
-⚠️ Rate limit reached (${rateLimitStatus['requestsInWindow']}/${rateLimitStatus['maxRequestsPerMinute']} requests per minute).
-
-Please wait a moment before requesting analysis again.
-
-Cached responses available: ${rateLimitStatus['cachedResponses']}
-''');
-        return;
-      }
-
       final analysis = await aiService.analyzeContext(contextDescription);
       setState(() => _aiAnalysis = analysis);
     } catch (e) {
