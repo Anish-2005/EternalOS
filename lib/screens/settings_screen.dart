@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../context_manager.dart';
+import '../native_bridge.dart';
 import '../widgets/fullscreen_overlay.dart';
 import 'onboarding_screen.dart';
 
@@ -149,6 +150,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       subtitle: const Text(
                           'Show the floating overlay control across apps.'),
                       secondary: const Icon(Icons.view_sidebar),
+                    ),
+
+                    // Request overlay permission
+                    ListTile(
+                      leading: const Icon(Icons.settings_applications),
+                      title: const Text('Request overlay permission'),
+                      subtitle: const Text('Grant permission to draw over other apps.'),
+                      trailing: ElevatedButton(
+                        onPressed: () async {
+                          final granted = await NativeBridge.requestOverlayPermission();
+                          if (granted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Overlay permission granted')),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Please grant overlay permission in settings')),
+                            );
+                          }
+                        },
+                        child: const Text('Request'),
+                      ),
+                    ),
+
+                    // Show/Hide overlay
+                    ListTile(
+                      leading: const Icon(Icons.visibility),
+                      title: const Text('Show system overlay'),
+                      subtitle: const Text('Display the system-wide overlay.'),
+                      trailing: ElevatedButton(
+                        onPressed: () async {
+                          if (ctx.overlayEnabled) {
+                            await NativeBridge.showNativeOverlay();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Overlay shown')),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Enable overlay first')),
+                            );
+                          }
+                        },
+                        child: const Text('Show'),
+                      ),
                     ),
 
                     // Auto-run trusted automations

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'ai_service.dart';
+import 'native_bridge.dart';
 
 class ActionRecord {
   final String title;
@@ -52,6 +53,39 @@ class ContextManager extends ChangeNotifier {
 
   ContextManager() {
     _updateDynamicContext();
+    _setupNativeContextListener();
+  }
+
+  void _setupNativeContextListener() {
+    NativeBridge.setContextUpdateHandler((data) {
+      if (data is Map) {
+        final packageName = data['packageName'] as String?;
+        final className = data['className'] as String?;
+        final text = data['text'] as String?;
+        if (packageName != null) {
+          currentContext.activeApp = _getAppNameFromPackage(packageName);
+          currentContext.visibleItems = _extractVisibleItems(text);
+          _updateDynamicContext();
+        }
+      }
+    });
+  }
+
+  String _getAppNameFromPackage(String packageName) {
+    // Simple mapping; in real app, use package manager or database
+    final map = {
+      'com.android.chrome': 'Chrome',
+      'com.google.android.youtube': 'YouTube',
+      'com.instagram.android': 'Instagram',
+      // Add more mappings
+    };
+    return map[packageName] ?? packageName.split('.').last;
+  }
+
+  List<String> _extractVisibleItems(String? text) {
+    if (text == null || text.isEmpty) return [];
+    // Simple extraction; in real app, use NLP
+    return text.split(RegExp(r'\s+')).where((w) => w.length > 3).take(5).toList();
   }
 
   void _updateDynamicContext() {
