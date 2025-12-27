@@ -125,42 +125,11 @@ class MyApp extends StatelessWidget {
 
   static ThemeData _buildLightTheme() {
     return ThemeData(
-      brightness: Brightness.light,
-      primarySwatch: Colors.blue,
-      scaffoldBackgroundColor: Colors.grey[50],
-      textTheme: GoogleFonts.exo2TextTheme().copyWith(
-        titleLarge: GoogleFonts.orbitron(
-            textStyle:
-                const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        titleMedium:
-            GoogleFonts.orbitron(textStyle: const TextStyle(fontSize: 20)),
-        headlineLarge: GoogleFonts.orbitron(
-            textStyle:
-                const TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
-      ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-      ),
-      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-      ),
-      cardTheme: CardThemeData(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-    );
-  }
-
-  static ThemeData _buildDarkTheme() {
-    return ThemeData(
       brightness: Brightness.dark,
-      primarySwatch: Colors.blue,
-      scaffoldBackgroundColor: Colors.grey[900],
-      textTheme: GoogleFonts.exo2TextTheme(ThemeData.dark().textTheme).copyWith(
+      primarySwatch: Colors.cyan,
+      scaffoldBackgroundColor: const Color(0xFF0A0A0A),
+      textTheme:
+          GoogleFonts.orbitronTextTheme(ThemeData.dark().textTheme).copyWith(
         titleLarge: GoogleFonts.orbitron(
             textStyle: const TextStyle(
                 fontSize: 24,
@@ -173,21 +142,105 @@ class MyApp extends StatelessWidget {
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 color: Colors.white)),
+        bodyLarge:
+            GoogleFonts.exo2(textStyle: const TextStyle(color: Colors.white)),
+        bodyMedium:
+            GoogleFonts.exo2(textStyle: const TextStyle(color: Colors.white70)),
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF424242),
+        backgroundColor: Color(0xFF1A1A1A),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: Color(0xFF424242),
-        selectedItemColor: Colors.blueAccent,
+        backgroundColor: Color(0xFF1A1A1A),
+        selectedItemColor: Colors.cyanAccent,
         unselectedItemColor: Colors.grey,
       ),
       cardTheme: CardThemeData(
-        elevation: 4,
+        elevation: 8,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: Colors.grey[800],
+        color: const Color(0xFF2A2A2A),
+        shadowColor: Colors.cyanAccent.withOpacity(0.3),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.cyanAccent,
+          foregroundColor: Colors.black,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF3A3A3A),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        hintStyle: const TextStyle(color: Colors.white54),
+      ),
+    );
+  }
+
+  static ThemeData _buildDarkTheme() {
+    return ThemeData(
+      brightness: Brightness.dark,
+      primarySwatch: Colors.cyan,
+      scaffoldBackgroundColor: const Color(0xFF0A0A0A),
+      textTheme:
+          GoogleFonts.orbitronTextTheme(ThemeData.dark().textTheme).copyWith(
+        titleLarge: GoogleFonts.orbitron(
+            textStyle: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white)),
+        titleMedium: GoogleFonts.orbitron(
+            textStyle: const TextStyle(fontSize: 20, color: Colors.white)),
+        headlineLarge: GoogleFonts.orbitron(
+            textStyle: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.white)),
+        bodyLarge:
+            GoogleFonts.exo2(textStyle: const TextStyle(color: Colors.white)),
+        bodyMedium:
+            GoogleFonts.exo2(textStyle: const TextStyle(color: Colors.white70)),
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF1A1A1A),
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Color(0xFF1A1A1A),
+        selectedItemColor: Colors.cyanAccent,
+        unselectedItemColor: Colors.grey,
+      ),
+      cardTheme: CardThemeData(
+        elevation: 8,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        color: const Color(0xFF2A2A2A),
+        shadowColor: Colors.cyanAccent.withOpacity(0.3),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.cyanAccent,
+          foregroundColor: Colors.black,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF3A3A3A),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        hintStyle: const TextStyle(color: Colors.white54),
       ),
     );
   }

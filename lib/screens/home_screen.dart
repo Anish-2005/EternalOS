@@ -22,32 +22,247 @@ class _HomeScreenState extends State<HomeScreen> {
     final ctx = Provider.of<ContextManager>(context);
     final voice = Provider.of<VoiceService>(context);
     final theme = Theme.of(context);
-    final actionExecutor = ActionExecutor(ctx, ctx.aiService);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Row(
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF0A0A0A), Color(0xFF1A1A1A)],
+        ),
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      colors: [Colors.cyanAccent, Colors.blueAccent],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.cyanAccent.withOpacity(0.3),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.blur_on, color: Colors.black),
+                ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('ETERNAL OS', style: theme.textTheme.headlineLarge),
+                    Text('AI-Powered Overlay System',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: Colors.cyanAccent,
+                        )),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
+
+            // Status Cards
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatusCard(
+                    'Active App',
+                    ctx.currentContext.activeApp,
+                    Icons.apps,
+                    Colors.greenAccent,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildStatusCard(
+                    'Cart Items',
+                    '${ctx.cartTotalCount}',
+                    Icons.shopping_cart,
+                    Colors.orangeAccent,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // Quick Actions Grid
+            Text('QUICK ACTIONS', style: theme.textTheme.titleLarge),
+            const SizedBox(height: 16),
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              children: [
+                _buildActionCard(
+                  'Voice Command',
+                  'Speak to control',
+                  Icons.mic,
+                  () => _startVoiceCommand(ctx, voice),
+                ),
+                _buildActionCard(
+                  'AI Analysis',
+                  'Context insights',
+                  Icons.psychology,
+                  () => _showAIAnalysis(context, ctx),
+                ),
+                _buildActionCard(
+                  'Automation',
+                  'Create rules',
+                  Icons.auto_mode,
+                  () => _showAutomationDialog(context),
+                ),
+                _buildActionCard(
+                  'System Overlay',
+                  'Toggle overlay',
+                  Icons.layers,
+                  () => _toggleOverlay(ctx),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
+
+            // Recent Activity
+            Text('RECENT ACTIVITY', style: theme.textTheme.titleLarge),
+            const SizedBox(height: 16),
+            ...ctx.history.take(3).map((record) => _buildActivityItem(record)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusCard(String title, String value, IconData icon, Color color) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: color, size: 32),
+            const SizedBox(height: 8),
+            Text(title, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+            const SizedBox(height: 4),
+            Text(value, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionCard(String title, String subtitle, IconData icon, VoidCallback onTap) {
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(
-                child: Row(children: [
-                  Icon(Icons.blur_on, color: theme.iconTheme.color),
-                  const SizedBox(width: 8),
-                  Flexible(
-                      child:
-                          Text('EternalOS', style: theme.textTheme.titleLarge))
-                ]),
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [Colors.cyanAccent, Colors.blueAccent],
+                  ),
+                ),
+                child: Icon(icon, color: Colors.black, size: 24),
               ),
-              Row(children: [
-                Text('Cart: ${ctx.cartTotalCount}',
-                    style: theme.textTheme.bodyMedium),
-                const SizedBox(width: 8),
-                IconButton(
-                    onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (_) => const SettingsScreen())),
-                    icon: Icon(Icons.settings, color: theme.iconTheme.color))
+              const SizedBox(height: 12),
+              Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 4),
+              Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActivityItem(ActionRecord record) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: Container(
+          width: 8,
+          height: 8,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.cyanAccent,
+          ),
+        ),
+        title: Text(record.title, style: const TextStyle(color: Colors.white)),
+        subtitle: Text(
+          '${record.time.hour}:${record.time.minute.toString().padLeft(2, '0')}',
+          style: const TextStyle(color: Colors.white54),
+        ),
+      ),
+    );
+  }
+
+  void _startVoiceCommand(ContextManager ctx, VoiceService voice) async {
+    // Implement voice command
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Voice command activated')),
+    );
+  }
+
+  void _showAIAnalysis(BuildContext context, ContextManager ctx) async {
+    // Show AI analysis dialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF2A2A2A),
+        title: const Text('AI Context Analysis', style: TextStyle(color: Colors.white)),
+        content: const Text('Analyzing current context...', style: TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAutomationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF2A2A2A),
+        title: const Text('Create Automation', style: TextStyle(color: Colors.white)),
+        content: const Text('Automation creation coming soon...', style: TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _toggleOverlay(ContextManager ctx) {
+    // Toggle overlay
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Overlay toggled')),
+    );
+  }
               ])
             ],
           ),

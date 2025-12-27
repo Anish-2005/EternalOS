@@ -36,13 +36,15 @@ class PuterAIService {
   Future<void> initialize() async {
     if (kIsWeb) {
       // Load Puter script on web
-      js.context.callMethod('eval', ['''
+      js.context.callMethod('eval', [
+        '''
         if (!window.puter) {
           var script = document.createElement('script');
           script.src = 'https://js.puter.com/v2/';
           document.head.appendChild(script);
         }
-      ''']);
+      '''
+      ]);
     }
   }
 
@@ -66,16 +68,15 @@ class PuterAIService {
     }
   }
 
-  Future<String> _chatWeb(String message, {String model = 'gemini-3-pro-preview'}) async {
+  Future<String> _chatWeb(String message,
+      {String model = 'gemini-3-pro-preview'}) async {
     final completer = Completer<String>();
 
     try {
       // Use JS interop to call Puter AI
       final result = js.context.callMethod('puter.ai.chat', [
         message,
-        js.JsObject.jsify({
-          'model': model
-        })
+        js.JsObject.jsify({'model': model})
       ]);
 
       // Since it's async, we need to handle the promise
@@ -88,7 +89,8 @@ class PuterAIService {
     return completer.future;
   }
 
-  Future<String> _chatMobile(String message, {String model = 'gemini-3-pro-preview'}) async {
+  Future<String> _chatMobile(String message,
+      {String model = 'gemini-3-pro-preview'}) async {
     if (_controller == null) {
       throw Exception('Puter AI not initialized');
     }
@@ -116,7 +118,8 @@ class PuterAIService {
 
   Widget buildWebView() {
     if (kIsWeb || _controller == null) {
-      return const SizedBox.shrink(); // Return empty widget if not initialized or on web
+      return const SizedBox
+          .shrink(); // Return empty widget if not initialized or on web
     }
     return WebViewWidget(
       controller: _controller!,
